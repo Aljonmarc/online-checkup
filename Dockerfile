@@ -44,9 +44,8 @@ EXPOSE 8000
 # Expose port for Vite (for hot module reloading in development)
 EXPOSE 5173
 
+CMD ["php artisan migrate --force"]
+
 # Use entrypoint script to decide the mode (production/dev)
 ENTRYPOINT ["sh", "-c"]
 CMD ["php artisan serve --host=0.0.0.0 --port=8000"]
-
-# Run scripts
-CMD ["/start.sh"]
