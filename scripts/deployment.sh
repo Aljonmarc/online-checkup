@@ -13,5 +13,8 @@ php artisan route:cache
 echo "Running migrations..."
 php artisan migrate --force
 
+# Start in dev
+npm run dev
+
 # Start Laravel server
 php artisan serve --host=0.0.0.0 --port=8000
