@@ -47,3 +47,6 @@ EXPOSE 5173
 # Use entrypoint script to decide the mode (production/dev)
 ENTRYPOINT ["sh", "-c"]
 CMD ["php artisan serve --host=0.0.0.0 --port=8000"]
+
+# Run scripts
+CMD ["/start.sh"]
