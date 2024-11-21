@@ -17,4 +17,25 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        chunkSizeWarningLimit: 1500, // Raise the limit if needed
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('vue')) {
+                            return 'vue'; // Separate Vue into its own chunk
+                        }
+                        if (id.includes('vue-router')) {
+                            return 'vue-router'; // Separate vue-router
+                        }
+                        if (id.includes('axios')) {
+                            return 'axios'; // Separate axios
+                        }
+                        return 'vendor'; // Remaining vendor dependencies
+                    }
+                },
+            },
+        },
+    },
 });

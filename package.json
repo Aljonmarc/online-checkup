@@ -28,6 +28,7 @@
         "element-plus": "^2.8.4",
         "primeicons": "^7.0.0",
         "primevue": "^4.1.0",
+        "vue-router": "^4.4.5",
         "vue-sweetalert2": "^5.0.11"
     }
 }
