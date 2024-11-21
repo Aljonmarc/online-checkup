@@ -21,6 +21,8 @@ echo "Running migrations..."
 php artisan migrate --force
 
 echo "Building vite"
+
 npm install
+
 npm run build
 
