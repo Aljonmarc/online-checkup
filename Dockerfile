@@ -1,23 +1,49 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+# Use an official PHP image as the base image for Laravel
+FROM php:8.2-fpm
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    curl \
+    libpq-dev \
+    libzip-dev \
+    zip \
+    && docker-php-ext-install pdo pdo_mysql zip
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install Node.js (required for Vite)
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs
+
+# Set the working directory
+WORKDIR /var/www/html/public
+
+# Copy application files
 COPY . .
 
-# Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# Ensure proper permissions for Laravel
+RUN chown -R www-data:www-data /var/www/html/public \
+    && chmod -R 755 /var/www/html/public \
+    && chmod -R 775 /var/www/html/public/storage /var/www/html/public/bootstrap/cache
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG true
-ENV LOG_CHANNEL stderr
+# Install PHP dependencies using Composer
+RUN composer install --optimize-autoloader --no-dev
 
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Install NPM dependencies
+RUN npm ci
 
-# Install node and npm for Vite
-RUN apk add --update nodejs npm
+# Build the frontend assets for production
+RUN npm run build
 
-CMD ["/start.sh"]
+# Expose port for PHP server
+EXPOSE 8000
+
+# Expose port for Vite (for hot module reloading in development)
+EXPOSE 5173
+
+# Use entrypoint script to decide the mode (production/dev)
+ENTRYPOINT ["sh", "-c"]
+CMD ["php artisan serve --host=0.0.0.0 --port=8000"]
