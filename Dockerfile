@@ -36,7 +36,7 @@ RUN composer install --optimize-autoloader --no-dev
 RUN npm ci
 
 # Build the frontend assets for production
-RUN npm run build
+# RUN npm run build
 
 # Expose port for PHP server
 EXPOSE 8000
