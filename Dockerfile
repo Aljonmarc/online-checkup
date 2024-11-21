@@ -19,15 +19,15 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs
 
 # Set the working directory
-WORKDIR /var/www/html/public
+WORKDIR /var/www/html
 
 # Copy application files
 COPY . .
 
 # Ensure proper permissions for Laravel
-RUN chown -R www-data:www-data /var/www/html/public \
-    && chmod -R 755 /var/www/html/public \
-    && chmod -R 775 /var/www/html/public/storage /var/www/html/public/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Install PHP dependencies using Composer
 RUN composer install --optimize-autoloader --no-dev
@@ -44,8 +44,11 @@ EXPOSE 8000
 # Expose port for Vite (for hot module reloading in development)
 EXPOSE 5173
 
-CMD ["php artisan migrate --force"]
+# Copy entrypoint script
+COPY scripts/deployment.sh /usr/local/bin/
+
+# Ensure the entrypoint script is executable
+RUN chmod +x /usr/local/bin/deployment.sh
 
 # Use entrypoint script to decide the mode (production/dev)
-ENTRYPOINT ["sh", "-c"]
-CMD ["php artisan serve --host=0.0.0.0 --port=8000"]
+ENTRYPOINT ["deployment.sh"]
